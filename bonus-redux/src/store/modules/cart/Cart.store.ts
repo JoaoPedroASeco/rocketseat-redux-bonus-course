@@ -1,52 +1,44 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ICartItem, ICartState } from '../../../shared/interfaces/cart'
 
 const cartInitialState: ICartState = {
   items: [],
-  loading: false,
+  failureStockCheck: []
 }
-
-export const fetchItems = createAsyncThunk('ADD_PRODUCT', async () => {
-  const response = await fetch('https://pokeapi.co/api/v2/pokemon/1')
-  return await response.json()
-})
 
 export const cartSlice = createSlice({
   name: 'cart',
   initialState: cartInitialState,
   reducers: {
-    addItem: (state, action: PayloadAction<ICartItem>) => {
-      if (!action.payload.product) return
+    addProductToCartRequest: (state, action: PayloadAction<ICartItem>) => {},
+    addProductToCartSuccess: (state, action: PayloadAction<ICartItem>) => {
+      const { product } = action.payload
 
-      if (!action.payload.quantity || action.payload.quantity < 0) action.payload.quantity = 1
+      const productInCartIndex = state.items.findIndex(item => item.product.id === product.id)
 
-      state.items.push(action.payload)
+      if (productInCartIndex >= 0) {
+        state.items[productInCartIndex].quantity++
+      } else {
+        state.items.push({
+          product,
+          quantity: 1
+        })
+      }
     },
-    removeItem: ({ items }, { payload: { id } }: PayloadAction<{ id: number }>) => {
-      items = items.filter(item => item.product.id !== id)
-    }
+    addProductToCartFailure: (state, action: PayloadAction<ICartItem>) => {
+      const { product: { id } } = action.payload
+      
+      state.failureStockCheck.push(id)
+
+      console.log('failure', action.payload)
+    },
   },
-  extraReducers: (builder) => {
-    builder.addCase( fetchItems.pending , (state,) => {
-      state.loading = true
-    })
-    .addCase( fetchItems.fulfilled , (state, action) => {
-      console.log(state, action)
-      state.loading = false
-    })
-    .addCase( fetchItems.rejected, (state, action) => {
-      state.loading = false
-    })
-  }
 })
 
 export const {
-  addItem,
-  removeItem,
+  addProductToCartRequest,
+  addProductToCartFailure,
+  addProductToCartSuccess
 } = cartSlice.actions
 
 export default cartSlice.reducer
-
-
-// createSlice vai criar  o reducer
-// PayloadAction é a tipagem da action

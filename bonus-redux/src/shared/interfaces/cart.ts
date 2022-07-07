@@ -11,5 +11,5 @@ export interface ICartItem {
 
 export interface ICartState {
   items: ICartItem[]
-  loading: boolean
+  failureStockCheck: number[]
 }

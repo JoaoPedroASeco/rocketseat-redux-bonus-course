@@ -58,4 +58,12 @@
         }
       ...
 
+      - Redux-Saga: 
+        - é um middleware que intercepta a chamada da action vinda do redux
+        - funções take: funções assincronas
+          - takeLatest: se ação que entrou no Redux-saga entrou na requisição da API e ainda não terminou, e mesmo assim o cliente continua clicando varias vezes, a funçaõ takeLatest vai cancelar todas as chamadas anteriores e só executar a ultima 
+          - takeEvery: executa todas as ações requisitadas pelo usuario!
+          - takeLeading: se o cliente clicar 5 vezes, a função takeLeading vai descartar as 4 ultimas e só excutar a primeira e esperala terminar antes de seguir em frente
+        - 
+
 
